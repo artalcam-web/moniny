@@ -23,13 +23,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const product = await getProduct(slug);
   if (!product) return {};
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://moniny.onrender.com";
+  const absoluteImage = product.images[0] ? `${siteUrl}${product.images[0].url}` : undefined;
   return {
     title: `${product.name} — ${product.vendor.name} | moniNY`,
     description: product.description.slice(0, 160),
     openGraph: {
       title: product.name,
       description: product.description.slice(0, 160),
-      images: product.images[0] ? [product.images[0].url] : undefined,
+      images: absoluteImage ? [absoluteImage] : undefined,
     },
   };
 }
