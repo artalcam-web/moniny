@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://moniny.onrender.com"),
   title: "moniNY — Conjuntos curados de Nueva York",
   description:
     "Marketplace de moda de Nueva York: vendedoras independientes suben sus conjuntos curados, piezas armadas listas para comprar completas o por separado.",
