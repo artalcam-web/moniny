@@ -67,6 +67,9 @@ async function main() {
     });
   }
 
+  // Retire the old Spanish-slug product from earlier seeds, if present.
+  await prisma.product.deleteMany({ where: { vendorId: vendor.id, slug: "vestido-floral-soho", NOT: { id: product.id } } });
+
   const existingItems = await prisma.productItem.count({ where: { productId: product.id } });
   if (existingItems === 0) {
     await prisma.productItem.createMany({
