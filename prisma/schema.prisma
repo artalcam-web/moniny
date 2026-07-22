@@ -51,6 +51,7 @@ model Product {
   description         String
   videoUrl            String?
   priceCents          Int
+  compareAtPriceCents Int?
   sellItemsSeparately Boolean  @default(false)
   status              String   @default("published") // draft | published
   // Stripe structure only — no live keys yet.

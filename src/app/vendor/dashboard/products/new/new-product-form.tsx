@@ -50,7 +50,7 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
       const urls = await Promise.all(Array.from(files).map(uploadFile));
       setImages((prev) => [...prev, ...urls]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al subir imágenes");
+      setError(err instanceof Error ? err.message : "Error uploading images");
     } finally {
       setImagesUploading(false);
     }
@@ -65,7 +65,7 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
       const url = await uploadFile(file);
       setVideoUrl(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al subir el video");
+      setError(err instanceof Error ? err.message : "Error uploading the video");
     } finally {
       setVideoUploading(false);
     }
@@ -91,7 +91,7 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
       const url = await uploadFile(file);
       updateItem(idx, { imageUrl: url, uploading: false });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al subir imagen de pieza");
+      setError(err instanceof Error ? err.message : "Error uploading piece image");
       updateItem(idx, { uploading: false });
     }
   }
@@ -101,12 +101,12 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
     setError(null);
 
     if (images.length === 0) {
-      setError("Sube al menos una fotografía del conjunto.");
+      setError("Upload at least one photo of the set.");
       return;
     }
     const priceCents = Math.round(parseFloat(price) * 100);
     if (!priceCents || priceCents <= 0) {
-      setError("Indica un precio válido para el conjunto.");
+      setError("Enter a valid price for the set.");
       return;
     }
 
@@ -141,11 +141,11 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No se pudo crear el conjunto");
+      if (!res.ok) throw new Error(data.error || "Couldn't create the set");
       router.push(`/product/${data.product.slug}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al crear el conjunto");
+      setError(err instanceof Error ? err.message : "Error creating the set");
     } finally {
       setSubmitting(false);
     }
@@ -154,18 +154,18 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="mb-1 block text-sm font-semibold">Nombre del conjunto</label>
+        <label className="mb-1 block text-sm font-semibold">Set name</label>
         <input required className="mn-input" value={name} onChange={(e) => setName(e.target.value)} />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold">Descripción</label>
+        <label className="mb-1 block text-sm font-semibold">Description</label>
         <textarea required className="mn-input" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-semibold">Precio del conjunto completo (USD)</label>
+          <label className="mb-1 block text-sm font-semibold">Full set price (USD)</label>
           <input
             required
             type="number"
@@ -177,9 +177,9 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold">Colección (opcional)</label>
+          <label className="mb-1 block text-sm font-semibold">Collection (optional)</label>
           <select className="mn-input" value={collectionId} onChange={(e) => setCollectionId(e.target.value)}>
-            <option value="">Sin colección</option>
+            <option value="">No collection</option>
             {collections.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -191,7 +191,7 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold">Fotografías del conjunto</label>
+        <label className="mb-1 block text-sm font-semibold">Set photos</label>
         <input
           ref={imageInputRef}
           type="file"
@@ -200,7 +200,7 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
           onChange={(e) => handleImagesSelected(e.target.files)}
           className="mn-input"
         />
-        {imagesUploading ? <p className="text-xs opacity-60 mt-1">Subiendo…</p> : null}
+        {imagesUploading ? <p className="text-xs opacity-60 mt-1">Uploading…</p> : null}
         {images.length > 0 ? (
           <div className="mt-3 grid grid-cols-4 gap-2">
             {images.map((url, i) => (
@@ -221,16 +221,16 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold">Video (opcional)</label>
+        <label className="mb-1 block text-sm font-semibold">Video (optional)</label>
         <input ref={videoInputRef} type="file" accept="video/*" onChange={(e) => handleVideoSelected(e.target.files)} className="mn-input" />
-        {videoUploading ? <p className="text-xs opacity-60 mt-1">Subiendo video…</p> : null}
-        {videoUrl ? <p className="text-xs opacity-60 mt-1">Video listo ✓</p> : null}
+        {videoUploading ? <p className="text-xs opacity-60 mt-1">Uploading video…</p> : null}
+        {videoUrl ? <p className="text-xs opacity-60 mt-1">Video ready ✓</p> : null}
       </div>
 
       <div className="rounded border p-4" style={{ borderColor: "var(--mn-line)" }}>
         <label className="flex items-center gap-2 text-sm font-semibold">
           <input type="checkbox" checked={sellSeparately} onChange={(e) => setSellSeparately(e.target.checked)} />
-          Permitir vender las piezas del conjunto por separado
+          Allow selling the set&apos;s pieces separately
         </label>
 
         {sellSeparately ? (
@@ -240,20 +240,20 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 space-y-2">
                     <input
-                      placeholder="Nombre de la pieza"
+                      placeholder="Piece name"
                       className="mn-input"
                       value={it.name}
                       onChange={(e) => updateItem(idx, { name: e.target.value })}
                     />
                     <input
-                      placeholder="Descripción breve (opcional)"
+                      placeholder="Short description (optional)"
                       className="mn-input"
                       value={it.description}
                       onChange={(e) => updateItem(idx, { description: e.target.value })}
                     />
                     <div className="grid grid-cols-2 gap-2">
                       <input
-                        placeholder="Precio (USD)"
+                        placeholder="Price (USD)"
                         type="number"
                         min="0"
                         step="0.01"
@@ -262,44 +262,44 @@ export function NewProductForm({ collections }: { collections: Collection[] }) {
                         onChange={(e) => updateItem(idx, { price: e.target.value })}
                       />
                       <input
-                        placeholder="Tallas (S, M, L)"
+                        placeholder="Sizes (S, M, L)"
                         className="mn-input"
                         value={it.sizes}
                         onChange={(e) => updateItem(idx, { sizes: e.target.value })}
                       />
                     </div>
                     <input type="file" accept="image/*" onChange={(e) => handleItemImage(idx, e.target.files)} className="mn-input" />
-                    {it.uploading ? <p className="text-xs opacity-60">Subiendo…</p> : null}
+                    {it.uploading ? <p className="text-xs opacity-60">Uploading…</p> : null}
                     {it.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={it.imageUrl} alt="" className="h-20 w-16 rounded-sm object-cover" />
                     ) : null}
                   </div>
                   <button type="button" onClick={() => removeItem(idx)} className="text-xs opacity-50 hover:opacity-100">
-                    Quitar
+                    Remove
                   </button>
                 </div>
               </div>
             ))}
             <button type="button" onClick={addItem} className="mn-btn-outline !py-2 !px-4 text-sm">
-              + Añadir pieza
+              + Add piece
             </button>
           </div>
         ) : null}
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold">Estado</label>
+        <label className="mb-1 block text-sm font-semibold">Status</label>
         <select className="mn-input" value={status} onChange={(e) => setStatus(e.target.value as "published" | "draft")}>
-          <option value="published">Publicado (visible ya)</option>
-          <option value="draft">Borrador (solo tú lo ves)</option>
+          <option value="published">Published (visible now)</option>
+          <option value="draft">Draft (only you can see it)</option>
         </select>
       </div>
 
       {error ? <p className="text-sm" style={{ color: "var(--mn-red)" }}>{error}</p> : null}
 
       <button type="submit" disabled={submitting} className="mn-btn-accent w-full justify-center disabled:opacity-60">
-        {submitting ? "Publicando…" : "Publicar conjunto"}
+        {submitting ? "Publishing…" : "Publish set"}
       </button>
     </form>
   );

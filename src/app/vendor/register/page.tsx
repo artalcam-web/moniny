@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "@/lib/i18n/client";
 
 export default function VendorRegisterPage() {
   const router = useRouter();
+  const { dict } = useLocale();
   const [form, setForm] = useState({ name: "", email: "", password: "", city: "New York", bio: "" });
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -21,29 +23,27 @@ export default function VendorRegisterPage() {
         body: JSON.stringify(form),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No pudimos crear tu cuenta");
+      if (!res.ok) throw new Error(data.error || "We couldn't create your account");
       router.push("/vendor/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al registrar");
+      setError(err instanceof Error ? err.message : "Registration error");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="mx-auto max-w-md px-5 py-16 mn-fade-up">
-      <h1 className="mn-headline text-3xl mb-2">Vender en moniNY</h1>
-      <p className="text-sm opacity-70 mb-8">
-        Crea tu cuenta de vendedora para subir tus conjuntos, con fotos, precio y piezas por separado.
-      </p>
+    <div className="mx-auto max-w-md px-4 sm:px-6 py-16 mn-fade-up">
+      <h1 className="mn-headline text-2xl sm:text-3xl mb-2">{dict.vendorAuth.registerTitle}</h1>
+      <p className="text-sm opacity-70 mb-8">{dict.vendorAuth.registerSubtitle}</p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1 block text-sm font-semibold">Nombre / marca</label>
+          <label className="mb-1 block text-sm font-semibold">{dict.vendorAuth.nameLabel}</label>
           <input required className="mn-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold">Email</label>
+          <label className="mb-1 block text-sm font-semibold">{dict.vendorAuth.emailLabel}</label>
           <input
             required
             type="email"
@@ -53,7 +53,7 @@ export default function VendorRegisterPage() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold">Contraseña</label>
+          <label className="mb-1 block text-sm font-semibold">{dict.vendorAuth.passwordLabel}</label>
           <input
             required
             type="password"
@@ -64,22 +64,26 @@ export default function VendorRegisterPage() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold">Ciudad</label>
+          <label className="mb-1 block text-sm font-semibold">{dict.vendorAuth.cityLabel}</label>
           <input className="mn-input" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold">Bio (opcional)</label>
+          <label className="mb-1 block text-sm font-semibold">{dict.vendorAuth.bioLabel}</label>
           <textarea className="mn-input" rows={3} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
         </div>
-        {error ? <p className="text-sm" style={{ color: "var(--mn-red)" }}>{error}</p> : null}
+        {error ? (
+          <p className="text-sm" style={{ color: "var(--mn-pink)" }}>
+            {error}
+          </p>
+        ) : null}
         <button type="submit" disabled={submitting} className="mn-btn-accent w-full justify-center disabled:opacity-60">
-          {submitting ? "Creando cuenta…" : "Crear mi tienda"}
+          {submitting ? dict.vendorAuth.creating : dict.vendorAuth.createStore}
         </button>
       </form>
       <p className="text-sm opacity-70 mt-6">
-        ¿Ya tienes cuenta?{" "}
+        {dict.vendorAuth.haveAccount}{" "}
         <Link href="/vendor/login" className="underline">
-          Inicia sesión
+          {dict.vendorAuth.signIn}
         </Link>
       </p>
     </div>

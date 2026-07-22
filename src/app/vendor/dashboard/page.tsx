@@ -24,12 +24,12 @@ export default async function VendorDashboardPage() {
     <div className="mx-auto max-w-5xl px-5 py-12 mn-fade-up">
       <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs opacity-60">Hola, {vendor.name}</p>
-          <h1 className="mn-headline text-3xl">Tu panel</h1>
+          <p className="text-xs opacity-60">Hi, {vendor.name}</p>
+          <h1 className="mn-headline text-2xl sm:text-3xl">Your dashboard</h1>
         </div>
         <div className="flex gap-3">
           <Link href={`/marcas/${vendor.slug}`} className="mn-btn-outline !py-2 !px-4 text-sm">
-            Ver mi tienda
+            View my store
           </Link>
           <LogoutButton />
         </div>
@@ -37,14 +37,14 @@ export default async function VendorDashboardPage() {
 
       <section className="mb-12">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="mn-headline text-xl">Divisiones / Colecciones</h2>
+          <h2 className="mn-headline text-xl">Divisions / Collections</h2>
           <Link href="/vendor/dashboard/collections/new" className="mn-btn-accent !py-2 !px-4 text-sm">
-            + Nueva colección
+            + New collection
           </Link>
         </div>
         {vendor.collections.length === 0 ? (
           <p className="text-sm opacity-60">
-            Aún no tienes colecciones (ej. Verano, Otoño, Sport, Formal). Crea una para organizar tus conjuntos.
+            You don&apos;t have any collections yet (e.g. Summer, Fall, Sport, Formal). Create one to organize your sets.
           </p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-3">
@@ -52,7 +52,7 @@ export default async function VendorDashboardPage() {
               <div key={c.id} className="mn-card p-4">
                 <p className="font-semibold text-sm">{c.name}</p>
                 {c.season ? <p className="text-xs opacity-60">{c.season}</p> : null}
-                <p className="text-xs opacity-60 mt-2">{c._count.products} conjunto(s)</p>
+                <p className="text-xs opacity-60 mt-2">{c._count.products} set(s)</p>
               </div>
             ))}
           </div>
@@ -61,13 +61,13 @@ export default async function VendorDashboardPage() {
 
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="mn-headline text-xl">Tus conjuntos</h2>
+          <h2 className="mn-headline text-xl">Your sets</h2>
           <Link href="/vendor/dashboard/products/new" className="mn-btn-accent !py-2 !px-4 text-sm">
-            + Nuevo conjunto
+            + New set
           </Link>
         </div>
         {vendor.products.length === 0 ? (
-          <p className="text-sm opacity-60">Todavía no subiste ningún conjunto.</p>
+          <p className="text-sm opacity-60">You haven&apos;t uploaded any sets yet.</p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {vendor.products.map((p) => (
@@ -81,7 +81,7 @@ export default async function VendorDashboardPage() {
                 <div className="flex-1">
                   <p className="text-sm font-semibold">{p.name}</p>
                   <p className="text-xs opacity-60">
-                    {p.collection?.name ?? "Sin colección"} · {p.status === "published" ? "Publicado" : "Borrador"}
+                    {p.collection?.name ?? "No collection"} · {p.status === "published" ? "Published" : "Draft"}
                   </p>
                   <p className="text-xs mt-1">{formatPrice(p.priceCents)}</p>
                 </div>

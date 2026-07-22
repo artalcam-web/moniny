@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
+import { LocaleProvider } from "@/lib/i18n/client";
+import { getLocale } from "@/lib/i18n/server";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://moniny.onrender.com"),
-  title: "moniNY — Conjuntos curados de Nueva York",
+  title: "moniNY — Curated NYC Outfits",
   description:
-    "Marketplace de moda de Nueva York: vendedoras independientes suben sus conjuntos curados, piezas armadas listas para comprar completas o por separado.",
+    "moniNY marketplace: independent sellers upload their curated outfit sets — buy the full look or every piece on its own.",
 };
 
 export const viewport = {
@@ -16,15 +18,18 @@ export const viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
   return (
-    <html lang="es" className="h-full antialiased">
+    <html lang={locale} className="h-full antialiased">
       <body className="min-h-full flex flex-col" style={{ background: "var(--mn-bg)", color: "var(--mn-ink)" }}>
-        <CartProvider>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </CartProvider>
+        <LocaleProvider initialLocale={locale}>
+          <CartProvider>
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </CartProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
+import { useLocale } from "@/lib/i18n/client";
 import { formatPrice } from "@/lib/utils";
 
 export default function CheckoutPage() {
   const { lines, subtotalCents, clear } = useCart();
+  const { dict } = useLocale();
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,11 +44,11 @@ export default function CheckoutPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No pudimos procesar tu pedido");
+      if (!res.ok) throw new Error(data.error || dict.checkout.genericError);
       clear();
       router.push(`/pedido-confirmado?orders=${data.orderIds.length}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No pudimos procesar tu pedido. Intenta de nuevo.");
+      setError(err instanceof Error ? err.message : dict.checkout.genericError);
     } finally {
       setSubmitting(false);
     }
@@ -54,19 +56,19 @@ export default function CheckoutPage() {
 
   if (lines.length === 0) {
     return (
-      <div className="mx-auto max-w-xl px-5 py-24 text-center mn-fade-up">
-        <p className="opacity-60">Tu carrito está vacío. Añade conjuntos o piezas antes de finalizar la compra.</p>
+      <div className="mx-auto max-w-xl px-4 sm:px-6 py-24 text-center mn-fade-up">
+        <p className="opacity-60">{dict.checkout.emptyCart}</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-5 py-14 mn-fade-up">
-      <h1 className="mn-headline text-3xl mb-8">Finalizar compra</h1>
+    <div className="mx-auto max-w-4xl px-4 sm:px-6 py-14 mn-fade-up">
+      <h1 className="mn-headline text-2xl sm:text-3xl mb-8">{dict.checkout.title}</h1>
       <div className="grid gap-10 sm:grid-cols-[1.3fr_1fr]">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-semibold">Nombre completo</label>
+            <label className="mb-1 block text-sm font-semibold">{dict.checkout.fullName}</label>
             <input
               required
               className="mn-input"
@@ -76,7 +78,7 @@ export default function CheckoutPage() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-semibold">Email</label>
+              <label className="mb-1 block text-sm font-semibold">{dict.checkout.email}</label>
               <input
                 required
                 type="email"
@@ -86,12 +88,12 @@ export default function CheckoutPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-semibold">Teléfono</label>
+              <label className="mb-1 block text-sm font-semibold">{dict.checkout.phone}</label>
               <input className="mn-input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-semibold">Dirección de envío</label>
+            <label className="mb-1 block text-sm font-semibold">{dict.checkout.address}</label>
             <input
               required
               className="mn-input"
@@ -100,11 +102,11 @@ export default function CheckoutPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-semibold">Ciudad</label>
+            <label className="mb-1 block text-sm font-semibold">{dict.checkout.city}</label>
             <input required className="mn-input" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-semibold">Notas (opcional)</label>
+            <label className="mb-1 block text-sm font-semibold">{dict.checkout.notes}</label>
             <textarea
               className="mn-input"
               rows={3}
@@ -114,19 +116,22 @@ export default function CheckoutPage() {
           </div>
 
           <div className="rounded border p-4 text-sm" style={{ borderColor: "var(--mn-line)", background: "var(--mn-panel)" }}>
-            Pago: cada vendedora te contactará por email para coordinar el pago de su parte del pedido.
-            El cobro automático en línea (Stripe) se activará próximamente.
+            {dict.checkout.paymentNote}
           </div>
 
-          {error ? <p className="text-sm" style={{ color: "var(--mn-red)" }}>{error}</p> : null}
+          {error ? (
+            <p className="text-sm" style={{ color: "var(--mn-pink)" }}>
+              {error}
+            </p>
+          ) : null}
 
           <button type="submit" disabled={submitting} className="mn-btn-accent w-full justify-center disabled:opacity-60">
-            {submitting ? "Enviando pedido…" : `Confirmar pedido · ${formatPrice(subtotalCents)}`}
+            {submitting ? dict.checkout.sending : `${dict.checkout.confirm} · ${formatPrice(subtotalCents)}`}
           </button>
         </form>
 
         <aside className="mn-card h-fit p-5">
-          <h2 className="mn-headline text-lg mb-4">Resumen</h2>
+          <h2 className="mn-headline text-lg mb-4">{dict.checkout.summary}</h2>
           <div className="space-y-3 text-sm">
             {lines.map((l, i) => (
               <div key={i} className="flex justify-between">
@@ -138,7 +143,7 @@ export default function CheckoutPage() {
             ))}
           </div>
           <div className="mt-4 flex justify-between border-t pt-4 text-sm font-semibold" style={{ borderColor: "var(--mn-line)" }}>
-            <span>Subtotal</span>
+            <span>{dict.cart.subtotal}</span>
             <span>{formatPrice(subtotalCents)}</span>
           </div>
         </aside>

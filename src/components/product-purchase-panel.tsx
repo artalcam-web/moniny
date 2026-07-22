@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/utils";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 type Item = {
   id: string;
@@ -23,6 +24,8 @@ type Props = {
   sellItemsSeparately: boolean;
   items: Item[];
   coverImageUrl?: string;
+  compareAtPriceCents?: number | null;
+  dict: Dictionary;
 };
 
 export function ProductPurchasePanel({
@@ -31,9 +34,11 @@ export function ProductPurchasePanel({
   productId,
   productName,
   priceCents,
+  compareAtPriceCents,
   sellItemsSeparately,
   items,
   coverImageUrl,
+  dict,
 }: Props) {
   const { add } = useCart();
   const [setAdded, setSetAdded] = useState(false);
@@ -43,7 +48,12 @@ export function ProductPurchasePanel({
   return (
     <div className="space-y-8">
       <div>
-        <p className="mt-3 text-2xl font-semibold">{formatPrice(priceCents)}</p>
+        <p className="mt-3 text-2xl font-semibold">
+          {formatPrice(priceCents)}
+          {compareAtPriceCents && compareAtPriceCents > priceCents ? (
+            <span className="mn-strike ml-2 text-base font-normal">{formatPrice(compareAtPriceCents)}</span>
+          ) : null}
+        </p>
         <button
           onClick={() => {
             add({
@@ -61,14 +71,14 @@ export function ProductPurchasePanel({
           }}
           className="mn-btn-accent mt-5 w-full justify-center sm:w-auto"
         >
-          {setAdded ? "✓ Conjunto añadido" : "Comprar el conjunto completo"}
+          {setAdded ? `✓ ${dict.product.added}` : dict.product.buyFullSet}
         </button>
       </div>
 
       {sellItemsSeparately && items.length > 0 ? (
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.15em] mb-3" style={{ color: "var(--mn-navy)" }}>
-            O compra cada pieza por separado
+            {dict.product.buySeparately}
           </p>
           <div className="divide-y" style={{ borderColor: "var(--mn-line)" }}>
             {items.map((it) => {
@@ -112,7 +122,7 @@ export function ProductPurchasePanel({
                     }}
                     className="mn-btn-outline !py-2 !px-3 text-xs whitespace-nowrap"
                   >
-                    {itemAdded === it.id ? "✓ Añadida" : "Añadir"}
+                    {itemAdded === it.id ? `✓ ${dict.product.addedShort}` : dict.product.add}
                   </button>
                 </div>
               );

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getDictionary } from "@/lib/i18n/server";
 
 export default async function OrderConfirmedPage({
   searchParams,
@@ -6,16 +7,17 @@ export default async function OrderConfirmedPage({
   searchParams: Promise<{ orders?: string }>;
 }) {
   const { orders } = await searchParams;
+  const { dict } = await getDictionary();
+  const count = orders ? Number(orders) : 1;
+  const multi = count > 1 ? dict.orderConfirmed.multiSuffix.replace("{count}", String(count)) : "";
+
   return (
-    <div className="mx-auto max-w-xl px-5 py-24 text-center mn-fade-up">
+    <div className="mx-auto max-w-xl px-4 sm:px-6 py-24 text-center mn-fade-up">
       <p className="mn-headline text-6xl mb-4">✓</p>
-      <h1 className="mn-headline text-3xl mb-3">¡Pedido recibido!</h1>
-      <p className="opacity-70">
-        Gracias por tu compra{orders && Number(orders) > 1 ? ` (${orders} vendedoras distintas)` : ""}. Cada
-        vendedora te escribirá por email para coordinar el pago y el envío.
-      </p>
+      <h1 className="mn-headline text-2xl sm:text-3xl mb-3">{dict.orderConfirmed.title}</h1>
+      <p className="opacity-70">{dict.orderConfirmed.body.replace("{multi}", multi)}</p>
       <Link href="/marcas" className="mn-btn-accent mt-8 inline-flex">
-        Seguir explorando
+        {dict.orderConfirmed.keepExploring}
       </Link>
     </div>
   );

@@ -16,11 +16,11 @@ export default async function NewProductPage() {
   });
 
   return (
-    <div className="mx-auto max-w-2xl px-5 py-14 mn-fade-up">
-      <h1 className="mn-headline text-3xl mb-2">Nuevo conjunto</h1>
+    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-14 mn-fade-up">
+      <h1 className="mn-headline text-2xl sm:text-3xl mb-2">New set</h1>
       <p className="text-sm opacity-70 mb-8">
-        Sube tu conjunto ya armado: fotos, descripción, video opcional y precio. Cada conjunto tiene su
-        propia página, lista para compartir como landing page.
+        Upload your already-curated set: photos, description, optional video, and price. Every set gets
+        its own page, ready to share as a landing page.
       </p>
       <NewProductForm collections={collections} />
     </div>

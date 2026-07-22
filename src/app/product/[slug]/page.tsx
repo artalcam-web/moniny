@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { ProductPurchasePanel } from "@/components/product-purchase-panel";
+import { getDictionary } from "@/lib/i18n/server";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const { dict } = await getDictionary();
   const product = await getProduct(slug);
   if (!product || product.status !== "published") notFound();
 
@@ -51,10 +54,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   }));
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 mn-fade-up">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 mn-fade-up">
       <div className="mb-6 text-sm">
         <Link href={`/marcas/${product.vendor.slug}`} className="mn-btn-ghost">
-          ← {product.vendor.name}
+          ← {dict.product.backTo} {product.vendor.name}
         </Link>
       </div>
 
@@ -64,7 +67,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {product.images[0] ? (
               <Image src={product.images[0].url} alt={product.name} fill sizes="50vw" className="object-cover" priority />
             ) : (
-              <div className="flex h-full items-center justify-center text-xs opacity-40">Sin imagen</div>
+              <div className="flex h-full items-center justify-center text-xs opacity-40">No image</div>
             )}
           </div>
           {product.images.length > 1 ? (
@@ -83,12 +86,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
         <div>
           {product.collection ? (
-            <span className="mn-tag" style={{ background: "var(--mn-yellow)" }}>
-              {product.collection.season || product.collection.name}
+            <span className="mn-tag mn-badge-new">
+              {(() => {
+                const key = (product.collection!.season || "").toLowerCase() as keyof Dictionary["seasons"];
+                return dict.seasons[key] ?? product.collection!.season ?? product.collection!.name;
+              })()}
             </span>
           ) : null}
-          <h1 className="mn-headline mt-3 text-3xl">{product.name}</h1>
-          <p className="text-sm opacity-60 mt-1">por {product.vendor.name} · {product.vendor.city}</p>
+          <h1 className="mn-headline mt-3 text-2xl sm:text-3xl">{product.name}</h1>
+          <p className="text-sm opacity-60 mt-1">
+            {dict.product.by} {product.vendor.name} · {product.vendor.city}
+          </p>
           <p className="mt-5 max-w-md text-sm leading-relaxed opacity-80 whitespace-pre-line">{product.description}</p>
 
           <div className="mt-8">
@@ -99,9 +107,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               productSlug={product.slug}
               productName={product.name}
               priceCents={product.priceCents}
+              compareAtPriceCents={product.compareAtPriceCents}
               sellItemsSeparately={product.sellItemsSeparately}
               items={items}
               coverImageUrl={product.images[0]?.url}
+              dict={dict}
             />
           </div>
         </div>
